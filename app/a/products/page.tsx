@@ -1,34 +1,39 @@
 "use client";
 
 import { useQuery } from "@apollo/client";
-import { useEffect, useState } from "react";
-import { auth } from "../../../lib/firebase";
 import { GET_PRODUCTS } from "../queries";
 import useAuthGuard from "@/hooks/useAuthGuard";
-import Link from "next/link";
+import { signOut } from "firebase/auth";
 
-const Products = () => {
-  // Fetch products only when logged in
-  const { data, loading, error } = useQuery(GET_PRODUCTS);
+import Products from "@/components/pages/a/Products";
+import { auth } from "@/lib/firebase/firebaseClient";
+import { useRouter } from "next/router";
+
+const _Products = () => {
+  const response = useQuery(GET_PRODUCTS);
+  const router = useRouter();
 
   const { user } = useAuthGuard();
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error.message}</p>;
+  if (response.loading) return <p>Loading...</p>;
+  if (response.error) return <p>Error: {response.error.message}</p>;
+
+  const handleLogout = async () => {
+    if (!auth) {
+      throw new Error("Firebase auth is not initialized");
+    }
+    await signOut(auth);
+    router.push("/auth");
+  };
 
   return (
-    <div>
-      <h1>Products</h1>
-      <Link href="/a">Dashboard</Link> <p>For {user?.email}!</p>
-      <ul>
-        {data.products.map((product: { id: string; name: string }) => (
-          <li key={product.id}>
-            {product.name} (ID: {product.id})
-          </li>
-        ))}
-      </ul>
-    </div>
+    <Products
+      products={response.data?.products ?? []}
+      user={user}
+      router={{ navigate: router.push }}
+      onLogout={handleLogout}
+    />
   );
 };
 
-export default Products;
+export default _Products;

@@ -1,5 +1,5 @@
 import { ApolloClient, InMemoryCache, HttpLink } from "@apollo/client";
-import { auth } from "../lib/firebase";
+import { auth } from "./firebase/firebaseClient";
 
 const createApolloClient = () => {
   const httpLink = new HttpLink({
