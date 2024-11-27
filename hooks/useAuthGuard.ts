@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/contexts/AuthContext";
+import { User } from "./user.types";
 
 const useAuthGuard = () => {
   const { user, loading } = useAuth();
@@ -14,7 +15,7 @@ const useAuthGuard = () => {
     }
   }, [loading, user, router]);
 
-  return { user, loading };
+  return { user: user as User, loading };
 };
 
 export default useAuthGuard;

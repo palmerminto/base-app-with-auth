@@ -2,11 +2,11 @@
 
 import { useRouter } from "next/navigation";
 import useAuthGuard from "../../hooks/useAuthGuard";
-import { auth } from "../../lib/firebase";
 import { signOut } from "firebase/auth";
-import Link from "next/link";
+import { auth } from "@/lib/firebase/firebaseClient";
+import { AdminDashboard } from "@/components/pages/a/Dashboard";
 
-const AdminDashboard = () => {
+const _AdminDashboard = () => {
   const { user } = useAuthGuard();
   const router = useRouter();
 
@@ -18,16 +18,15 @@ const AdminDashboard = () => {
     router.push("/auth");
   };
 
-  return (
-    <div>
-      <h1>Admin Dashboard</h1>
-      <Link href="/a/products">Products</Link>
-      <p>Welcome, {user?.email}!</p>
-      <button onClick={handleLogout} style={{ marginTop: "20px" }}>
-        Logout
-      </button>
-    </div>
+  return user ? (
+    <AdminDashboard
+      user={user}
+      router={{ navigate: router.push }}
+      onLogout={handleLogout}
+    />
+  ) : (
+    <p>Loading...</p>
   );
 };
 
-export default AdminDashboard;
+export default _AdminDashboard;
